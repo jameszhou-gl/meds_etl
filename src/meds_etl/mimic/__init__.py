@@ -17,7 +17,6 @@ import meds_etl
 import meds_etl.unsorted
 import meds_etl.utils
 
-MIMIC_VERSION = "demo_2.2"
 
 MIMIC_TIME_FORMATS: Iterable[str] = ("%Y-%m-%d %H:%M:%S%.f", "%Y-%m-%d")
 
@@ -49,6 +48,7 @@ def main():
     parser = argparse.ArgumentParser(prog="meds_etl_mimic", description="Performs an ETL from MIMIC_IV to MEDS")
     parser.add_argument("src_mimic", type=str)
     parser.add_argument("destination", type=str)
+    parser.add_argument("mimic_version", type=str)
     parser.add_argument("--num_shards", type=int, default=100)
     parser.add_argument("--num_proc", type=int, default=1)
     parser.add_argument("--backend", type=str, default="polars")
@@ -57,10 +57,10 @@ def main():
     if not os.path.exists(args.src_mimic):
         raise ValueError(f'The source MIMIC_IV folder ("{args.src_mimic}") does not seem to exist?')
 
-    src_mimic_version = os.path.join(args.src_mimic, MIMIC_VERSION)
+    src_mimic_version = os.path.join(args.src_mimic, args.mimic_version)
 
     if not os.path.exists(src_mimic_version):
-        raise ValueError(f'The source MIMIC_IV folder does not contain a version 2.2 subfolder ("{src_mimic_version}")')
+        raise ValueError(f'The source MIMIC_IV folder does not contain a version of ("{src_mimic_version}")')
 
     os.makedirs(args.destination)
 
@@ -366,7 +366,7 @@ def main():
 
     metadata = {
         "dataset_name": "MIMIC-IV",
-        "dataset_version": MIMIC_VERSION,
+        "dataset_version": args.mimic_version,
         "etl_name": "meds_etl.mimic",
         "etl_version": meds_etl.__version__,
         "meds_version": meds.__version__,
