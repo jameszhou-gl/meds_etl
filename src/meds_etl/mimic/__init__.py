@@ -17,7 +17,7 @@ import meds_etl
 import meds_etl.unsorted
 import meds_etl.utils
 
-MIMIC_VERSION = "2.2"
+MIMIC_VERSION = "demo_2.2"
 
 MIMIC_TIME_FORMATS: Iterable[str] = ("%Y-%m-%d %H:%M:%S%.f", "%Y-%m-%d")
 
