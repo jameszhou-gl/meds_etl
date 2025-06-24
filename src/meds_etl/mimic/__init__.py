@@ -76,112 +76,13 @@ def main():
         # Ignore these tables as they don't generate events
         "icu/caregiver": None,
         "icu/d_items": None,
-        "icu/datetimeevents": {
-            "code": "MIMIC_IV_ITEM/" + pl.col("itemid"),
-            "time": pl.col("storetime"),
-            "value": pl.col("value"),
-            "metadata": {
-                "visit_id": pl.col("hadm_id").cast(pl.Int64),
-                "caregiver_id": pl.col("caregiver_id"),
-            },
-        },
-        "icu/inputevents": {
-            "code": "MIMIC_IV_ITEM/" + pl.col("itemid") + "/" + pl.col("ordercategorydescription"),
-            "time": pl.col("storetime"),
-            "value": pl.col("rate"),
-            "metadata": {
-                "visit_id": pl.col("hadm_id"),
-                "caregiver_id": pl.col("caregiver_id"),
-                "start": pl.col("starttime"),
-                "end": pl.col("endtime"),
-                "unit": pl.col("rateuom"),
-            },
-        },
-        "icu/chartevents": {
-            "code": "MIMIC_IV_ITEM/" + pl.col("itemid"),
-            "time": pl.coalesce(pl.col("storetime"), pl.col("charttime")),
-            "value": pl.col("value"),
-            "metadata": {
-                "visit_id": pl.col("hadm_id"),
-                "caregiver_id": pl.col("caregiver_id"),
-                "unit": pl.col("valueuom"),
-            },
-        },
-        "icu/procedureevents": {
-            "code": "MIMIC_IV_ITEM/" + pl.col("itemid"),
-            "time": pl.col("storetime"),
-            "value": pl.col("value"),
-            "metadata": {
-                "location": pl.col("location"),
-                "location_category": pl.col("locationcategory"),
-                "visit_id": pl.col("hadm_id").cast(pl.Int64),
-                "caregiver_id": pl.col("caregiver_id"),
-                "unit": pl.col("valueuom"),
-                "start": pl.col("starttime"),
-                "end": pl.col("endtime"),
-            },
-        },
-        "icu/ingredientevents": {
-            "code": "MIMIC_IV_ITEM/" + pl.col("itemid"),
-            "time": pl.col("storetime"),
-            "value": pl.col("rate"),
-            "metadata": {
-                "visit_id": pl.col("hadm_id").cast(pl.Int64),
-                "caregiver_id": pl.col("caregiver_id"),
-                "unit": pl.col("rateuom"),
-                "start": pl.col("starttime"),
-                "end": pl.col("endtime"),
-            },
-        },
-        "icu/outputevents": {
-            "code": "MIMIC_IV_ITEM/" + pl.col("itemid"),
-            "time": pl.col("storetime"),
-            "value": pl.col("value"),
-            "metadata": {
-                "visit_id": pl.col("hadm_id"),
-                "caregiver_id": pl.col("caregiver_id"),
-                "unit": pl.col("valueuom"),
-            },
-        },
+        "icu/datetimeevents": None,
+        "icu/inputevents": None,
+        "icu/chartevents": None,
+        "icu/procedureevents": None,
+        "icu/ingredientevents": None,
+        "icu/outputevents": None,
         "hosp/admissions": [
-            {
-                "code": "MIMIC_IV_Admission/" + pl.col("admission_type"),
-                "time": pl.col("admittime"),
-                "metadata": {
-                    "visit_id": pl.col("hadm_id"),
-                    "caregiver_id": pl.col("admit_provider_id"),
-                    "end": pl.col("dischtime"),
-                },
-            },
-            {
-                "code": "MIMIC_IV_Admission_Location/" + pl.col("admission_location"),
-                "time": pl.col("admittime"),
-                "metadata": {
-                    "visit_id": pl.col("hadm_id"),
-                },
-            },
-            {
-                "code": "MIMIC_IV_Discharge_Location/" + pl.col("discharge_location"),
-                "time": pl.col("dischtime"),
-                "metadata": {
-                    "visit_id": pl.col("hadm_id"),
-                },
-                "possibly_null_code": True,
-            },
-            {
-                "code": "MIMIC_IV_Insurance/" + pl.col("insurance"),
-                "time": pl.col("admittime"),
-                "metadata": {
-                    "visit_id": pl.col("hadm_id"),
-                },
-            },
-            {
-                "code": "MIMIC_IV_Language/" + pl.col("language"),
-                "time": pl.col("admittime"),
-                "metadata": {
-                    "visit_id": pl.col("hadm_id"),
-                },
-            },
             {
                 "code": "MIMIC_IV_Marital_Status/" + pl.col("marital_status"),
                 "time": pl.col("admittime"),
@@ -212,26 +113,12 @@ def main():
                 "seq_num": pl.col("seq_num"),
             },
         },
-        "hosp/drgcodes": {
-            "code": pl.col("drg_type") + "/" + pl.col("drg_code"),
-            "time": pl.col("dischtime"),
-            "requires_admission_join": True,
-            "metadata": {
-                "visit_id": pl.col("hadm_id"),
-            },
-        },
+        "hosp/drgcodes": None,
         # It's unclear how to best process these tables.
         # TODO: Fix these
         "hosp/emar": None,
         "hosp/emar_detail": None,
-        "hosp/hcpcsevents": {
-            "code": "HCPCS/" + pl.col("hcpcs_cd"),
-            "time": pl.col("chartdate"),
-            "metadata": {
-                "visit_id": pl.col("hadm_id"),
-                "seq_num": pl.col("seq_num"),
-            },
-        },
+        "hosp/hcpcsevents": None,
         "hosp/labevents": {
             "code": "MIMIC_IV_LABITEM/" + pl.col("itemid"),
             "time": pl.coalesce(pl.col("storetime"), pl.col("charttime")),
@@ -246,25 +133,8 @@ def main():
         },
         # This transformation is ignoring a ton of data within the table.
         # TODO: Improve this
-        "hosp/microbiologyevents": {
-            "code": "MIMIC_IV_MicrobiologyTest/" + pl.col("test_name"),
-            "time": pl.coalesce(pl.col("storetime"), pl.col("storedate"), pl.col("charttime"), pl.col("chartdate")),
-            "value": pl.col("org_name"),
-            "metadata": {
-                "visit_id": pl.col("hadm_id"),
-                "caregiver_id": pl.col("order_provider_id"),
-                "specimen_name": "MIMIC_IV_MicrobiologySpecimin/" + pl.col("spec_type_desc"),
-                "ab_name": "MIMIC_IV_MicrobiologyAntiBiotic/" + pl.col("ab_name"),
-                "dilution_text": pl.col("dilution_text"),
-                "interpretation": pl.col("interpretation"),
-                "comments": pl.col("comments"),
-            },
-        },
-        "hosp/omr": {
-            "code": "MIMIC_IV_OMR/" + pl.col("result_name"),
-            "time": pl.col("chartdate"),
-            "value": pl.col("result_value"),
-        },
+        "hosp/microbiologyevents": None,
+        "hosp/omr": None,
         "hosp/patients": [
             {
                 # Birth
@@ -311,21 +181,8 @@ def main():
         },
         # Doesn't generate events
         "hosp/provider": None,
-        "hosp/services": {
-            "code": "MIMIC_IV_Service/" + pl.col("curr_service"),
-            "time": pl.col("transfertime"),
-            "metadata": {
-                "visit_id": pl.col("hadm_id"),
-            },
-        },
-        "hosp/transfers": {
-            "code": "MIMIC_IV_Transfer/" + pl.col("careunit"),
-            "time": pl.col("intime"),
-            "metadata": {
-                "visit_id": pl.col("hadm_id"),
-            },
-            "possibly_null_code": True,
-        },
+        "hosp/services": None,
+        "hosp/transfers": None,
     }
 
     admission_table = pl.read_csv(
@@ -343,9 +200,9 @@ def main():
     print("Processing tables into " + temp_dir)
 
     for table_name, mapping_codes in all_tables.items():
-        print("Processing", table_name)
         if mapping_codes is None:
             continue
+        print("Processing", table_name)
 
         uncompressed_path = os.path.join(decompressed_dir, table_name.replace("/", "_") + ".csv")
         compressed_path = os.path.join(src_mimic_version, table_name + ".csv.gz")
